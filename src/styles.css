@@ -3261,3 +3261,127 @@ tbody tr:hover {
     display: none;
   }
 }
+
+/* Motion. Short, eased transitions that confirm interaction without
+   slowing work down. Disabled entirely for prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .button,
+  .icon-button,
+  .nav-item,
+  .backup-option,
+  .client-card,
+  .stat-card,
+  .review-summary > div,
+  .team-progress button,
+  .duration-presets button,
+  .repeat-entry,
+  .review-row,
+  .report-row,
+  .text-button {
+    transition:
+      transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .nav-item:hover:not(.active) {
+    transform: translateY(-2px) scale(1.02);
+  }
+  .button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px #1a1d2a1f;
+  }
+  .button:active:not(:disabled),
+  .icon-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+  .icon-button:hover:not(:disabled) {
+    transform: scale(1.08);
+  }
+  .stat-card:hover,
+  .review-summary > div:hover,
+  .client-card:hover,
+  .backup-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px #1a1d2a14;
+  }
+  .team-progress button:hover,
+  .duration-presets button:hover,
+  .repeat-entry:hover {
+    transform: translateY(-1px);
+  }
+  .review-row:hover {
+    background-color: var(--selected-bg);
+  }
+  main {
+    animation: page-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .stats > *,
+  .review-summary > div {
+    animation: rise-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  .stats > :nth-child(2),
+  .review-summary > div:nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  .stats > :nth-child(3),
+  .review-summary > div:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  .stats > :nth-child(4),
+  .review-summary > div:nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  .bar-stack {
+    transform-origin: bottom;
+    animation: grow-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  .modal[open] {
+    animation: pop-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .modal[open]::backdrop {
+    animation: fade-in 0.22s ease;
+  }
+  .toast {
+    animation: slide-up 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .review-warnings li,
+  .reviewed-mark {
+    animation: fade-in 0.25s ease;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes grow-up {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
