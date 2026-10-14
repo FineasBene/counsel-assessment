@@ -20,12 +20,7 @@ import {
   totals,
   weekStart,
 } from '../model';
-import {
-  selectReview,
-  selectWeek,
-  undoEntries,
-  updateEntries,
-} from '../review';
+import { selectReview, undoEntries, updateEntries } from '../review';
 import type { EntryPatch, UndoRecord } from '../review';
 
 export function ReviewPage({
@@ -57,7 +52,6 @@ export function ReviewPage({
   const [operation, setOperation] = useState<UndoRecord | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const weekEntries = selectWeek(data.entries, week);
   const visible = selectReview(data.entries, data.clients, {
     week,
     clientId,
@@ -65,9 +59,9 @@ export function ReviewPage({
     status,
     search,
   });
-  const summaryEntries = weekEntries;
-  const exportEntries = weekEntries;
-  const summary = totals(summaryEntries);
+  // Totals and export follow exactly the rows on screen (week + filters).
+  const summary = totals(visible);
+  const exportEntries = visible;
   const selectedIds = selected.filter((id) =>
     data.entries.some((e) => e.id === id),
   );
@@ -129,7 +123,9 @@ export function ReviewPage({
               `counsel-review-${week}.csv`,
               'text/csv;charset=utf-8',
             );
-            setMessage(`Exported ${exportEntries.length} entries.`);
+            setMessage(
+              `Exported ${exportEntries.length} ${exportEntries.length === 1 ? 'entry' : 'entries'} in this view.`,
+            );
           }}
         >
           <ArrowDownToLine size={16} />
@@ -375,7 +371,10 @@ export function ReviewPage({
             {visible.length} entries · {shortDate(week)} –{' '}
             {shortDate(addDays(week, 6))}
           </span>
-          <span>Export includes all entries in this view.</span>
+          <span>
+            Totals and export use the {visible.length} entries shown, not the
+            selection.
+          </span>
         </div>
       </div>
     </section>
