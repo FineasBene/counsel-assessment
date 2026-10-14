@@ -1576,6 +1576,16 @@ tbody tr:hover {
 .report-list {
   padding: 0 25px;
 }
+.report-subheading {
+  margin: 26px 25px 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.member-monogram {
+  color: var(--accent);
+  background: var(--selected-bg);
+  font-size: 11px;
+}
 .report-row {
   display: flex;
   align-items: center;
@@ -1613,16 +1623,19 @@ tbody tr:hover {
   height: 100%;
   border-radius: 9px;
 }
-.report-hours {
+.report-hours,
+.member-hours {
   width: 115px;
   text-align: right;
 }
-.report-hours strong {
+.report-hours strong,
+.member-hours strong {
   display: block;
   font-size: 15px;
   font-weight: 500;
 }
-.report-hours span {
+.report-hours span,
+.member-hours span {
   display: block;
   font-size: 11px;
   color: var(--t148);
@@ -2654,10 +2667,12 @@ tbody tr:hover {
   .report-meter {
     display: none;
   }
-  .report-hours {
+  .report-hours,
+  .member-hours {
     width: 85px;
   }
-  .report-hours strong {
+  .report-hours strong,
+  .member-hours strong {
     font-size: 13px;
   }
   .modal {

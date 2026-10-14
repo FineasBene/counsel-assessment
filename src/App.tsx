@@ -509,47 +509,91 @@ export default function App() {
                     )}
                   </div>
                 ) : page === 'reports' ? (
-                  <div className="report-list">
-                    {data.clients
-                      .map((client) => ({
-                        client,
-                        ...totals(
-                          filtered.filter((e) => e.clientId === client.id),
-                        ),
-                      }))
-                      .filter((c) => c.total)
-                      .sort((a, b) => b.total - a.total)
-                      .map((c) => (
-                        <div className="report-row" key={c.client.id}>
-                          <div className="report-client">
-                            <span
-                              className="client-monogram"
-                              style={{
-                                color: c.client.color,
-                                background: `${c.client.color}15`,
-                              }}
-                            >
-                              {c.client.name.slice(0, 1)}
-                            </span>
-                            <div>
-                              <strong>{c.client.name}</strong>
-                              <span>{c.utilization}% billable</span>
+                  <>
+                    <div className="report-list">
+                      {data.clients
+                        .map((client) => ({
+                          client,
+                          ...totals(
+                            filtered.filter((e) => e.clientId === client.id),
+                          ),
+                        }))
+                        .filter((c) => c.total)
+                        .sort((a, b) => b.total - a.total)
+                        .map((c) => (
+                          <div className="report-row" key={c.client.id}>
+                            <div className="report-client">
+                              <span
+                                className="client-monogram"
+                                style={{
+                                  color: c.client.color,
+                                  background: `${c.client.color}15`,
+                                }}
+                              >
+                                {c.client.name.slice(0, 1)}
+                              </span>
+                              <div>
+                                <strong>{c.client.name}</strong>
+                                <span>{c.utilization}% billable</span>
+                              </div>
+                            </div>
+                            <div className="report-meter">
+                              <div
+                                style={{
+                                  width: `${(c.total / summary.total) * 100}%`,
+                                }}
+                              />
+                            </div>
+                            <div className="report-hours">
+                              <strong>{duration(c.total)}</strong>
+                              <span>{duration(c.billable)} billable</span>
                             </div>
                           </div>
-                          <div className="report-meter">
-                            <div
-                              style={{
-                                width: `${(c.total / summary.total) * 100}%`,
-                              }}
-                            />
+                        ))}
+                    </div>
+                    <h3 className="report-subheading">Time by team member</h3>
+                    <div
+                      className="report-list"
+                      aria-label="Time by team member"
+                    >
+                      {[...new Set(filtered.map((e) => e.employee))]
+                        .map((name) => ({
+                          name,
+                          ...totals(
+                            filtered.filter((e) => e.employee === name),
+                          ),
+                        }))
+                        .sort((a, b) => b.total - a.total)
+                        .map((m) => (
+                          <div className="report-row" key={m.name}>
+                            <div className="report-client">
+                              <span className="client-monogram member-monogram">
+                                {m.name
+                                  .split(' ')
+                                  .map((part) => part[0])
+                                  .slice(0, 2)
+                                  .join('')}
+                              </span>
+                              <div>
+                                <strong>{m.name}</strong>
+                                <span>{m.utilization}% billable</span>
+                              </div>
+                            </div>
+                            <div className="report-meter">
+                              <div
+                                style={{
+                                  width: `${(m.total / summary.total) * 100}%`,
+                                }}
+                              />
+                            </div>
+                            <div className="member-hours">
+                              <strong>{duration(m.total)}</strong>
+                              <span>{duration(m.billable)} billable</span>
+                            </div>
                           </div>
-                          <div className="report-hours">
-                            <strong>{duration(c.total)}</strong>
-                            <span>{duration(c.billable)} billable</span>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                        ))}
+                    </div>
+                  </>
                 ) : (
                   <EntryTable
                     entries={filtered}

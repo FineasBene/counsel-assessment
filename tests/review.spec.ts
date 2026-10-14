@@ -139,3 +139,27 @@ test('Time entries shows which entries are reviewed', async ({ page }) => {
     ),
   ).toBe(true);
 });
+
+test('Reports shows time by team member', async ({ page }, info) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page.getByRole('button', { name: 'Reports', exact: true }).click();
+  const members = page.getByLabel('Time by team member');
+  await expect(members.locator('.report-row')).toHaveCount(3);
+  await expect(members).toContainText('Sofia Keller');
+  for (const theme of ['light', 'dark']) {
+    if (theme === 'dark')
+      await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+    await page.waitForTimeout(300);
+    await page.screenshot({
+      path: info.outputPath(`reports-${theme}.png`),
+      fullPage: true,
+    });
+    const axe = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(axe.violations.map((v) => v.id)).toEqual([]);
+  }
+});
