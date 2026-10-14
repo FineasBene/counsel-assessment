@@ -2,14 +2,14 @@
 
 ## Changed
 
-One commit per problem, each with a test that fails on the previous code.
+One commit per problem; each new test fails on the previous code.
 
 - **Billability lost on edit** (Alex): the entry form always started with Billable on. It now starts from the stored value. `EntryForm.tsx`
 - **Totals and export ignored filters** (Sofia): the summary and Export view used the whole week. Both now use exactly the visible rows; selection does not affect export.
 - **Corrections stayed "Reviewed"**: bulk client and billability changes now reset review when a value actually changes. This uses the same `needsReReview` rule as the form; unchanged saves keep review.
 - **Undo reverted other work**: undo restored a whole-workspace snapshot. It now restores only the entries the action touched. If one of them was edited or deleted since, undo is declined and the message names the entry.
 - **Friday workflow (selection scope)**: changing the week or a filter clears the selection and says so, and actions only reach visible rows. The toolbar shows "N of M in view selected · time" and the button names its count. Active filters are listed with a Clear button.
-- **Smaller additions**: a "Show N needing review" shortcut, reviewed billable time ("ready for billing"), and "Repeat previous entry" for Alex.
+- **Smaller additions**: "Show N needing review", reviewed billable time ("ready for billing"), and "Repeat previous entry" for Alex.
 
 ## Verified
 
@@ -31,4 +31,4 @@ I would release this to the pilot: every reported issue is reproduced and covere
 
 ## AI use
 
-Claude Code (Opus) read the code, implemented the fixes and wrote the tests. I tested each change by hand in the browser against the pilot week. One example of a correction: the agent's first billability test exercised `saveEntry` and passed on the old code. I required each new test to fail against the original source (`git stash`), which led to a component test of `EntryForm` instead.
+Claude Code (Opus) read the code, implemented the fixes and wrote the tests. I tested each change by hand in the browser against the pilot week. Every new test was run against the original source (`git stash`) and had to fail there. That check showed the agent's first billability test exercised `saveEntry` and passed on the old code, so it was replaced with an `EntryForm` component test.
