@@ -3385,3 +3385,42 @@ tbody tr:hover {
     transform: translateY(12px);
   }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .review-state,
+  .status-tag,
+  .switch,
+  .client-monogram {
+    transition:
+      transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .review-state:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  .review-state.is-reviewed {
+    animation: confirm-pop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .client-card:hover .client-monogram,
+  .report-row:hover .client-monogram {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  .review-row.is-selected {
+    animation: fade-in 0.2s ease;
+  }
+  .nav-item > svg {
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .nav-item:hover > svg {
+    transform: scale(1.12);
+  }
+  :focus-visible {
+    transition: outline-offset 0.15s ease;
+  }
+}
+@keyframes confirm-pop {
+  50% {
+    transform: scale(1.08);
+  }
+}

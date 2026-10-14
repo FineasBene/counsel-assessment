@@ -10,7 +10,7 @@ One commit per problem; each fix has a test that fails on the original code.
 - **Undo reverted other work**: undo restored a workspace snapshot. It now restores only the touched entries, and declines, naming the entry, if one changed since.
 - **Friday workflow, selection scope**: changing week/filters clears the selection and says so. Actions reach only visible rows. Selected rows are highlighted, the toolbar shows "N of M in view selected · time", and active filters are listed with Clear.
 - **Pre-billing checks**: review rows flag billable internal time, missing descriptions, possible duplicates and >12h days, with a "Show N flagged" filter. Advisory only.
-- **Optional/extras**: needing-review shortcut, "ready for billing" time, repeat previous entry, dark theme, the review view kept across pages, a Reviewed mark on Time entries, duration presets, per-person review progress, time by team member in Reports, a copyable Friday summary, and Duplicate on Time entries.
+- **Optional/extras**: needing-review shortcut, "ready for billing" time, repeat previous entry, dark theme, the review view kept across pages, a Reviewed mark on Time entries, duration presets, per-person review progress, time by team member in Reports, a copyable Friday summary, Duplicate on Time entries, and CSS motion (off under prefers-reduced-motion).
 
 ## Verified
 
