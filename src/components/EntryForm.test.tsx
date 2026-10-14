@@ -99,4 +99,27 @@ describe('EntryForm editing', () => {
     );
     expect(screen.queryByRole('button', { name: /^Repeat / })).toBeNull();
   });
+
+  it('saves an unchanged entry with its original description', async () => {
+    const onSave = vi.fn();
+    const imported = {
+      ...planning,
+      description: 'Weekly team planning ',
+      reviewed: true,
+    };
+    render(
+      <EntryForm
+        entry={imported}
+        clients={clients}
+        onSave={onSave}
+        onClose={() => {}}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: /Save changes/ }));
+    expect(onSave.mock.calls[0][0]).toMatchObject({
+      description: 'Weekly team planning ',
+      billable: false,
+      minutes: 45,
+    });
+  });
 });

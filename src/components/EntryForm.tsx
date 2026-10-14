@@ -109,7 +109,12 @@ export function EntryForm({
               minutes: Number(hours) * 60 + Number(minutes),
               clientId: client?.id ?? clientId,
               billable,
-              description: description.trim(),
+              // Keep the stored text when only surrounding whitespace differs,
+              // so an unchanged save does not count as a correction.
+              description:
+                entry && entry.description.trim() === description.trim()
+                  ? entry.description
+                  : description.trim(),
               employee: entry?.employee ?? EMPLOYEE,
             };
             validateEntry(next, client ? [...clients, client] : clients);
