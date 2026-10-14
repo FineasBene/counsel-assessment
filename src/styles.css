@@ -1757,6 +1757,26 @@ tbody tr:hover {
   color: var(--t161);
   font-size: 13px;
 }
+.duration-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.duration-presets button {
+  min-height: 26px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+}
+.duration-presets button:hover,
+.duration-presets button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 .billable-control {
   display: flex;
   align-items: center;

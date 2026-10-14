@@ -122,4 +122,27 @@ describe('EntryForm editing', () => {
       minutes: 45,
     });
   });
+
+  it('fills the duration from a preset', async () => {
+    const onSave = vi.fn();
+    render(
+      <EntryForm
+        entry={planning}
+        clients={clients}
+        onSave={onSave}
+        onClose={() => {}}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Set duration to 2h' }),
+    );
+    expect(screen.getByLabelText('Hours')).toHaveValue(2);
+    expect(screen.getByLabelText('Minutes')).toHaveValue(0);
+    await userEvent.click(screen.getByRole('button', { name: /Save changes/ }));
+    expect(onSave.mock.calls[0][0]).toMatchObject({
+      minutes: 120,
+      billable: false,
+      description: 'Weekly team planning',
+    });
+  });
 });
