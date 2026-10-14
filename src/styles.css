@@ -2617,3 +2617,29 @@ tbody tr:hover {
     gap: 7px;
   }
 }
+.repeat-entry {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 11px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: #fafbfc;
+  color: var(--ink);
+  font-size: 13px;
+  text-align: left;
+}
+.repeat-entry:hover {
+  border-color: var(--accent);
+}
+.repeat-entry svg {
+  flex: none;
+  color: var(--accent);
+}
+.repeat-entry span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

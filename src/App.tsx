@@ -660,6 +660,7 @@ export default function App() {
         <EntryForm
           entry={entryModal === 'new' ? undefined : entryModal}
           clients={data.clients}
+          entries={data.entries}
           onClose={() => setEntryModal(null)}
           onSave={(entry, client) => {
             save(

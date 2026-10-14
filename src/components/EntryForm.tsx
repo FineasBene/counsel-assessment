@@ -1,16 +1,25 @@
 import { useState } from 'react';
-import { Check, Plus } from 'lucide-react';
-import { COLORS, EMPLOYEE, localDate, validateEntry } from '../model';
+import { Check, Plus, Repeat2 } from 'lucide-react';
+import {
+  COLORS,
+  duration,
+  EMPLOYEE,
+  localDate,
+  shortDate,
+  validateEntry,
+} from '../model';
 import type { Client, Entry } from '../model';
 import { Modal } from './Modal';
 export function EntryForm({
   entry,
   clients,
+  entries = [],
   onSave,
   onClose,
 }: {
   entry?: Entry;
   clients: Client[];
+  entries?: Entry[];
   onSave: (entry: Entry, client?: Client) => void;
   onClose: () => void;
 }) {
@@ -28,6 +37,16 @@ export function EntryForm({
   const [description, setDescription] = useState(entry?.description ?? '');
   const [billable, setBillable] = useState(entry?.billable ?? true);
   const [error, setError] = useState('');
+  // New entries can repeat the user's most recent entry before the chosen
+  // date (usually yesterday's work). Every field stays editable.
+  const previous = entry
+    ? undefined
+    : entries
+        .filter((e) => e.employee === EMPLOYEE && e.date < date)
+        .sort(
+          (a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
+        )[0];
+  const previousClient = clients.find((c) => c.id === previous?.clientId);
   return (
     <Modal
       title={entry ? 'Edit time entry' : 'Make your time count.'}
@@ -38,6 +57,31 @@ export function EntryForm({
       }
       onClose={onClose}
     >
+      {previous && previousClient && (
+        <button
+          type="button"
+          className="repeat-entry"
+          onClick={() => {
+            setClientId(previous.clientId);
+            setHours(String(Math.floor(previous.minutes / 60)));
+            setMinutes(String(previous.minutes % 60));
+            setDescription(previous.description);
+            setBillable(previous.billable);
+          }}
+        >
+          <Repeat2 size={16} />
+          <span>
+            Repeat{' '}
+            {shortDate(previous.date, {
+              weekday: 'short',
+              day: 'numeric',
+              month: 'short',
+            })}
+            : {previous.description || previousClient.name} ·{' '}
+            {duration(previous.minutes)}
+          </span>
+        </button>
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
