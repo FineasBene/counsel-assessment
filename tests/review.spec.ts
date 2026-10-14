@@ -81,3 +81,33 @@ test('Friday review: filtered totals and export, re-review, selection scope', as
     ),
   ).toBe(true);
 });
+
+test('editing a reviewed entry from the review sends it back to review', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  const row = page
+    .locator('.review-row')
+    .filter({ hasText: 'Shareholder agreement review' })
+    .first();
+  await expect(row.getByRole('button', { name: /^Reopen/ })).toBeVisible();
+
+  // Saving without changes keeps the review.
+  await row.getByRole('button', { name: /^Edit review entry/ }).click();
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByText('Time entry updated.')).toBeVisible();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  await expect(row.getByRole('button', { name: /^Reopen/ })).toBeVisible();
+
+  // A real correction requires review again and says so.
+  await row.getByRole('button', { name: /^Edit review entry/ }).click();
+  await page.getByLabel('Hours', { exact: true }).fill('2');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByText(/now needs review again/)).toBeVisible();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  await expect(row.getByRole('button', { name: /^Review / })).toBeVisible();
+});

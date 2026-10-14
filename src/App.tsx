@@ -663,14 +663,17 @@ export default function App() {
           entries={data.entries}
           onClose={() => setEntryModal(null)}
           onSave={(entry, client) => {
-            save(
-              saveEntry(
-                data,
-                entry,
-                client,
-                entryModal === 'new' ? undefined : entryModal,
-              ),
+            const next = saveEntry(
+              data,
+              entry,
+              client,
+              entryModal === 'new' ? undefined : entryModal,
             );
+            save(next);
+            const reopened =
+              entryModal !== 'new' &&
+              entryModal.reviewed &&
+              !next.entries.find((e) => e.id === entry.id)?.reviewed;
             setEntryModal(null);
             setWeek(weekStart(entry.date));
             setRange('week');
@@ -681,7 +684,9 @@ export default function App() {
               text:
                 entryModal === 'new'
                   ? 'Time entry saved.'
-                  : 'Time entry updated.',
+                  : reopened
+                    ? 'Time entry updated. It was reviewed, so it now needs review again.'
+                    : 'Time entry updated.',
             });
           }}
         />
