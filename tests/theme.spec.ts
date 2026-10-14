@@ -45,3 +45,25 @@ test('dark theme persists and has no WCAG A/AA violations', async ({
   await page.screenshot({ path: info.outputPath('restore-dark.png') });
   expect(await violations(page)).toEqual([]);
 });
+
+test('pre-billing warnings are readable in both themes', async ({
+  page,
+}, info) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  await page.getByLabel('Select Weekly team planning').check();
+  await page.getByLabel('Bulk action').selectOption('billable');
+  await page.getByRole('button', { name: /Apply to 1 selected entry/ }).click();
+  await page.getByRole('button', { name: 'Show 1 flagged' }).click();
+  await expect(page.locator('.review-row')).toHaveCount(1);
+  for (const theme of ['light', 'dark']) {
+    if (theme === 'dark')
+      await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: info.outputPath(`flags-${theme}.png`) });
+    expect(await violations(page)).toEqual([]);
+  }
+});

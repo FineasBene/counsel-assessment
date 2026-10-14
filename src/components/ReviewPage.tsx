@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowDownToLine,
   Check,
   ChevronLeft,
@@ -20,10 +21,12 @@ import {
   weekStart,
 } from '../model';
 import {
+  billingWarnings,
   latestWeek,
   loadReviewView,
   saveReviewView,
   selectReview,
+  selectWeek,
   undoEntries,
   undoRecord,
   updateEntries,
@@ -57,13 +60,19 @@ export function ReviewPage({
   const [operation, setOperation] = useState<UndoRecord | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [flaggedOnly, setFlaggedOnly] = useState(false);
+  // Checks run on the whole week so duplicates and day totals are complete.
+  const warnings = billingWarnings(
+    selectWeek(data.entries, week),
+    data.clients,
+  );
   const visible = selectReview(data.entries, data.clients, {
     week,
     clientId,
     employee,
     status,
     search,
-  });
+  }).filter((e) => !flaggedOnly || warnings.has(e.id));
   // Totals and export follow exactly the rows on screen (week + filters).
   const summary = totals(visible);
   const exportEntries = visible;
@@ -98,7 +107,15 @@ export function ReviewPage({
     employee !== 'all' && employee,
     status !== 'all' && (status === 'pending' ? 'Needs review' : 'Reviewed'),
     search && `“${search}”`,
+    flaggedOnly && 'Flagged by pre-billing checks',
   ].filter(Boolean);
+  const flaggedInView = selectReview(data.entries, data.clients, {
+    week,
+    clientId,
+    employee,
+    status,
+    search,
+  }).filter((e) => warnings.has(e.id)).length;
   const employees = [...new Set(data.entries.map((e) => e.employee))].sort();
   function changeView(update: () => void) {
     update();
@@ -210,6 +227,18 @@ export function ReviewPage({
         <div>
           <span>Entries in view</span>
           <strong>{visible.length}</strong>
+          {(flaggedInView > 0 || flaggedOnly) && (
+            <button
+              className="text-button flag-toggle"
+              aria-pressed={flaggedOnly}
+              onClick={() => changeView(() => setFlaggedOnly(!flaggedOnly))}
+            >
+              <AlertTriangle size={13} aria-hidden="true" />
+              {flaggedOnly
+                ? 'Show all entries'
+                : `Show ${flaggedInView} flagged`}
+            </button>
+          )}
         </div>
         <div>
           <span>Time in view</span>
@@ -324,6 +353,7 @@ export function ReviewPage({
                   setEmployee('all');
                   setStatus('all');
                   setSearch('');
+                  setFlaggedOnly(false);
                 })
               }
             >
@@ -468,6 +498,19 @@ export function ReviewPage({
                       <span>{shortDate(entry.date)}</span>
                     </div>
                     <p>{entry.description || 'No description'}</p>
+                    {warnings.has(entry.id) && (
+                      <ul
+                        className="review-warnings"
+                        aria-label="Pre-billing checks"
+                      >
+                        {warnings.get(entry.id)!.map((text) => (
+                          <li key={text}>
+                            <AlertTriangle size={12} aria-hidden="true" />
+                            {text}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <span className="review-employee">{entry.employee}</span>
                   </div>
                   <div className="review-duration">

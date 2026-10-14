@@ -252,6 +252,8 @@
   --border: #2e323d;
   --green: #6fae95;
   --selected-bg: #252236;
+  --warn-bg: #3b311f;
+  --warn-ink: #f0c27a;
   --t0: #c8ccd6;
   --t1: #14161c;
   --t2: #3c2d79;
@@ -506,6 +508,8 @@
   --border: #e9ebef;
   --green: #447967;
   --selected-bg: #f6f4fb;
+  --warn-bg: #fdf1df;
+  --warn-ink: #8a4b0f;
 }
 * {
   box-sizing: border-box;
@@ -2917,6 +2921,29 @@ tbody tr:hover {
   font-size: 23px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+.review-warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.review-warnings li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  font-size: 11px;
+  font-weight: 500;
+}
+.review-summary .flag-toggle {
+  display: inline-flex;
+  color: var(--warn-ink);
 }
 .team-progress {
   display: flex;

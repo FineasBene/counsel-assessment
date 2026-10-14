@@ -178,4 +178,31 @@ describe('Weekly review scope', () => {
     await userEvent.click(button);
     expect(screen.getByLabelText('Review employee')).toHaveValue('all');
   });
+
+  it('flags billable internal work and can show only flagged entries', async () => {
+    render(<Harness />);
+    expect(screen.queryByText(/flagged/)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText('Select Weekly team planning'));
+    await userEvent.selectOptions(
+      screen.getByLabelText('Bulk action'),
+      'billable',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /Apply to 1 selected entry/ }),
+    );
+    expect(
+      screen.getByText('Billable time on an internal client'),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Show 1 flagged' }),
+    );
+    expect(rows()).toHaveLength(1);
+    expect(
+      screen.getByText(/Showing only: Flagged by pre-billing checks/),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Show all entries' }),
+    );
+    expect(rows().length).toBeGreaterThan(1);
+  });
 });

@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import pilot from './fixtures/pilot-workspace.json';
 import { decodeData } from './model';
 import type { Data } from './model';
-import { saveEntry, undoEntries, undoRecord, updateEntries } from './review';
+import {
+  billingWarnings,
+  saveEntry,
+  undoEntries,
+  undoRecord,
+  updateEntries,
+} from './review';
 
 const workspace = (): Data => decodeData(JSON.stringify(pilot));
 const find = (data: Data, id: string) => data.entries.find((e) => e.id === id)!;
@@ -74,5 +80,43 @@ describe('undo is scoped to the last review action', () => {
     );
     // Declining leaves the newer edit in place.
     expect(find(afterEdit, 'entry-001').minutes).toBe(120);
+  });
+});
+
+describe('pre-billing checks', () => {
+  const base = workspace();
+  const e = (over: Partial<Data['entries'][number]>) => ({
+    ...find(base, 'entry-001'),
+    ...over,
+  });
+  it('flags billable internal time, missing descriptions, duplicates and long days', () => {
+    const entries = [
+      e({ id: 'a', clientId: 'internal', billable: true }),
+      e({ id: 'b', description: '  ' }),
+      e({ id: 'c', date: '2026-10-01' }),
+      e({
+        id: 'd',
+        date: '2026-10-01',
+        description: 'shareholder agreement review ',
+      }),
+      e({ id: 'x', date: '2026-10-02', minutes: 700 }),
+      e({ id: 'y', date: '2026-10-02', minutes: 30, description: 'Other' }),
+      e({ id: 'ok', date: '2026-10-03' }),
+    ];
+    const w = billingWarnings(entries, base.clients);
+    expect(w.get('a')).toEqual(['Billable time on an internal client']);
+    expect(w.get('b')).toEqual(['No description for the bill']);
+    expect(w.get('c')).toEqual(['Possible duplicate']);
+    expect(w.get('d')).toEqual(['Possible duplicate']);
+    expect(w.get('x')).toEqual(['Over 12h logged by this person on this day']);
+    expect(w.get('y')).toEqual(['Over 12h logged by this person on this day']);
+    expect(w.has('ok')).toBe(false);
+  });
+  it('does not flag non-billable internal work', () => {
+    const w = billingWarnings(
+      [e({ id: 'p', clientId: 'internal', billable: false })],
+      base.clients,
+    );
+    expect(w.size).toBe(0);
   });
 });

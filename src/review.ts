@@ -196,3 +196,45 @@ export function saveReviewView(filters: ReviewFilters | null) {
     // Storage unavailable: the view simply resets next time.
   }
 }
+
+// Pre-billing checks: likely mistakes worth a second look before billing.
+// Advisory only; they never block an action or change data.
+export const DAY_LIMIT_MINUTES = 12 * 60;
+export function billingWarnings(
+  entries: Entry[],
+  clients: Client[],
+): Map<string, string[]> {
+  const warnings = new Map<string, string[]>();
+  const add = (id: string, text: string) =>
+    warnings.set(id, [...(warnings.get(id) ?? []), text]);
+  const internal = new Set(
+    clients.filter((c) => /internal/i.test(c.name)).map((c) => c.id),
+  );
+  const seen = new Map<string, string>();
+  const dayTotals = new Map<string, number>();
+  for (const e of entries) {
+    const day = `${e.employee}|${e.date}`;
+    dayTotals.set(day, (dayTotals.get(day) ?? 0) + e.minutes);
+  }
+  for (const e of entries) {
+    if (e.billable && internal.has(e.clientId))
+      add(e.id, 'Billable time on an internal client');
+    if (!e.description.trim()) add(e.id, 'No description for the bill');
+    const key = [
+      e.employee,
+      e.date,
+      e.clientId,
+      e.minutes,
+      e.description.trim().toLowerCase(),
+    ].join('|');
+    const first = seen.get(key);
+    if (first) {
+      add(e.id, 'Possible duplicate');
+      if (!warnings.get(first)?.includes('Possible duplicate'))
+        add(first, 'Possible duplicate');
+    } else seen.set(key, e.id);
+    if ((dayTotals.get(`${e.employee}|${e.date}`) ?? 0) > DAY_LIMIT_MINUTES)
+      add(e.id, 'Over 12h logged by this person on this day');
+  }
+  return warnings;
+}
