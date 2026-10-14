@@ -67,27 +67,53 @@ export function ReviewPage({
   // Totals and export follow exactly the rows on screen (week + filters).
   const summary = totals(visible);
   const exportEntries = visible;
-  const selectedIds = selected.filter((id) =>
-    data.entries.some((e) => e.id === id),
-  );
+  // Actions only ever touch selected rows that are currently visible.
+  const selectedIds = selected.filter((id) => visible.some((e) => e.id === id));
+  const selectedMinutes = totals(
+    visible.filter((e) => selectedIds.includes(e.id)),
+  ).total;
+  const pendingInView = visible.filter((e) => !e.reviewed).length;
   const employees = [...new Set(data.entries.map((e) => e.employee))].sort();
   function changeView(update: () => void) {
     update();
+    // Changing week or filters starts a fresh selection so the next action
+    // can never reach rows that are no longer on screen.
+    if (selected.length) {
+      setSelected([]);
+      setMessage('Selection cleared because the view changed.');
+    }
   }
-  function apply(ids: string[], patch: EntryPatch) {
+  function apply(
+    ids: string[],
+    patch: EntryPatch,
+    description: string,
+    clearSelection = true,
+  ) {
     setError('');
     try {
       const next = updateEntries(data, ids, patch);
       save(next);
       setOperation(undoRecord(data, next, ids));
-      setSelected([]);
+      if (clearSelection) setSelected([]);
       setMessage(
-        `Updated ${ids.length} ${ids.length === 1 ? 'entry' : 'entries'}.`,
+        `${description}: ${ids.length} ${ids.length === 1 ? 'entry' : 'entries'}.`,
       );
     } catch (e) {
       setError((e as Error).message);
     }
   }
+  const targetClientName =
+    data.clients.find((c) => c.id === targetClient)?.name ?? '';
+  const actionLabel =
+    action === 'client'
+      ? `Moved to ${targetClientName}`
+      : action === 'review'
+        ? 'Marked reviewed'
+        : action === 'reopen'
+          ? 'Returned to review'
+          : action === 'billable'
+            ? 'Marked billable'
+            : 'Marked non-billable';
   return (
     <section className="review-page" aria-label="Weekly review">
       <div className="period-toolbar">
@@ -162,8 +188,16 @@ export function ReviewPage({
         <div>
           <span>Reviewed in view</span>
           <strong>
-            {visible.filter((e) => e.reviewed).length} / {visible.length}
+            {visible.length - pendingInView} / {visible.length}
           </strong>
+          {pendingInView > 0 && status !== 'pending' && (
+            <button
+              className="text-button"
+              onClick={() => changeView(() => setStatus('pending'))}
+            >
+              Show {pendingInView} needing review
+            </button>
+          )}
         </div>
       </div>
       <div className="entries-panel">
@@ -221,7 +255,8 @@ export function ReviewPage({
               type="checkbox"
               aria-label="Select visible entries"
               checked={
-                visible.length > 0 && selectedIds.length === visible.length
+                visible.length > 0 &&
+                visible.every((e) => selected.includes(e.id))
               }
               disabled={!visible.length || readOnly}
               onChange={(e) =>
@@ -230,7 +265,11 @@ export function ReviewPage({
             />
             Select visible
           </label>
-          <span className="selection-count">{selectedIds.length} selected</span>
+          <span className="selection-count" aria-live="polite">
+            {selectedIds.length
+              ? `${selectedIds.length} of ${visible.length} in view selected · ${duration(selectedMinutes)}`
+              : 'None selected'}
+          </span>
           <select
             aria-label="Bulk action"
             value={action}
@@ -266,10 +305,12 @@ export function ReviewPage({
                   : action === 'review' || action === 'reopen'
                     ? { reviewed: action === 'review' }
                     : { billable: action === 'billable' },
+                actionLabel,
               )
             }
           >
             Apply to {selectedIds.length} selected
+            {selectedIds.length === 1 ? ' entry' : ' entries'}
           </button>
         </div>
         {error && (
@@ -353,7 +394,14 @@ export function ReviewPage({
                     disabled={readOnly}
                     aria-label={`${entry.reviewed ? 'Reopen' : 'Review'} ${entry.description || client.name}`}
                     onClick={() =>
-                      apply([entry.id], { reviewed: !entry.reviewed })
+                      apply(
+                        [entry.id],
+                        { reviewed: !entry.reviewed },
+                        entry.reviewed
+                          ? 'Returned to review'
+                          : 'Marked reviewed',
+                        false,
+                      )
                     }
                   >
                     {entry.reviewed && <Check size={13} />}{' '}

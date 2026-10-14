@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -60,5 +60,24 @@ describe('Weekly review scope', () => {
       expect(line).toContain('"Sofia Keller"');
       expect(line).toContain('"Meridian Holdings"');
     }
+  });
+
+  it('clears the selection when the view changes so hidden rows are never affected', async () => {
+    render(<Harness />);
+    await userEvent.click(screen.getByLabelText('Select visible entries'));
+    expect(screen.getByText(/in view selected/)).toBeInTheDocument();
+    await userEvent.selectOptions(
+      screen.getByLabelText('Review client'),
+      'meridian',
+    );
+    expect(screen.getByText('None selected')).toBeInTheDocument();
+    expect(
+      screen.getByText('Selection cleared because the view changed.'),
+    ).toBeInTheDocument();
+    expect(
+      within(document.querySelector('.bulk-toolbar')!).getByRole('button', {
+        name: /Apply to 0 selected/,
+      }),
+    ).toBeDisabled();
   });
 });
