@@ -1763,7 +1763,6 @@ tbody tr:hover {
   flex-wrap: nowrap;
   gap: 6px;
   margin: -6px 0 20px;
-  overflow-x: auto;
 }
 .duration-presets > span {
   margin-right: 4px;
