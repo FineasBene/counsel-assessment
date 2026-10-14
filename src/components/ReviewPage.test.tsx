@@ -158,4 +158,24 @@ describe('Weekly review scope', () => {
     expect(screen.getByLabelText('Review client')).toHaveValue('all');
     expect(screen.getByLabelText('Review status')).toHaveValue('all');
   });
+
+  it('shows review progress per team member and filters by member', async () => {
+    render(<Harness />);
+    const data = decodeData(JSON.stringify(pilot));
+    const week = data.entries.filter(
+      (e) => e.date >= '2026-09-28' && e.date <= '2026-10-04',
+    );
+    const sofia = week.filter((e) => e.employee === 'Sofia Keller');
+    const button = screen.getByRole('button', { name: /^Sofia Keller/ });
+    expect(button).toHaveTextContent(
+      `${sofia.filter((e) => e.reviewed).length}/${sofia.length} reviewed`,
+    );
+    await userEvent.click(button);
+    expect(screen.getByLabelText('Review employee')).toHaveValue(
+      'Sofia Keller',
+    );
+    expect(rows()).toHaveLength(sofia.length);
+    await userEvent.click(button);
+    expect(screen.getByLabelText('Review employee')).toHaveValue('all');
+  });
 });

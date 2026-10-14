@@ -2903,6 +2903,33 @@ tbody tr:hover {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+.team-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.team-progress button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+}
+.team-progress button span {
+  color: var(--t158);
+}
+.team-progress button svg {
+  color: var(--green);
+}
+.team-progress button:hover,
+.team-progress button[aria-pressed='true'] {
+  border-color: var(--accent);
+}
 .review-filters {
   flex-wrap: wrap;
 }

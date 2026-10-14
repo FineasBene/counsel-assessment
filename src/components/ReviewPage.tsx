@@ -73,6 +73,25 @@ export function ReviewPage({
     visible.filter((e) => selectedIds.includes(e.id)),
   ).total;
   const pendingInView = visible.filter((e) => !e.reviewed).length;
+  // Per-person progress for the week, client and search in view (ignores
+  // the team member and status filters so everyone stays comparable).
+  const teamRows = selectReview(data.entries, data.clients, {
+    week,
+    clientId,
+    employee: 'all',
+    status: 'all',
+    search,
+  });
+  const team = [...new Set(teamRows.map((e) => e.employee))]
+    .sort()
+    .map((name) => {
+      const rows = teamRows.filter((e) => e.employee === name);
+      return {
+        name,
+        total: rows.length,
+        reviewed: rows.filter((e) => e.reviewed).length,
+      };
+    });
   const readyForBilling = totals(visible.filter((e) => e.reviewed)).billable;
   const activeFilters = [
     clientId !== 'all' && data.clients.find((c) => c.id === clientId)?.name,
@@ -218,6 +237,33 @@ export function ReviewPage({
           )}
         </div>
       </div>
+      {team.length > 1 && (
+        <div
+          className="team-progress"
+          role="group"
+          aria-label="Review progress by team member"
+        >
+          {team.map((member) => (
+            <button
+              key={member.name}
+              aria-pressed={employee === member.name}
+              onClick={() =>
+                changeView(() =>
+                  setEmployee(employee === member.name ? 'all' : member.name),
+                )
+              }
+            >
+              <strong>{member.name}</strong>
+              <span>
+                {member.reviewed}/{member.total} reviewed
+              </span>
+              {member.reviewed === member.total && (
+                <Check size={13} aria-hidden="true" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="entries-panel">
         <div className="panel-title">
           <div>
