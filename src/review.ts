@@ -11,7 +11,9 @@ export type ReviewFilters = {
 export type EntryPatch = Partial<
   Pick<Entry, 'clientId' | 'billable' | 'reviewed'>
 >;
-export type UndoRecord = { before: Data; ids: string[] };
+// Snapshots of only the entries an action touched, so undo can restore them
+// without discarding unrelated work saved after the action.
+export type UndoRecord = { before: Entry[]; after: Entry[] };
 
 export function selectWeek(entries: Entry[], week: string) {
   return entries.filter(
@@ -41,15 +43,22 @@ export function selectReview(
         a.id.localeCompare(b.id),
     );
 }
-export function applyEntryUpdate(previous: Entry, next: Entry): Entry {
-  const changed =
+// A change to any of these fields invalidates a previous review.
+export function needsReReview(previous: Entry, next: Entry) {
+  return (
     previous.date !== next.date ||
     previous.minutes !== next.minutes ||
     previous.clientId !== next.clientId ||
     previous.billable !== next.billable ||
     previous.description !== next.description ||
-    previous.employee !== next.employee;
-  return { ...next, reviewed: changed ? false : previous.reviewed };
+    previous.employee !== next.employee
+  );
+}
+export function applyEntryUpdate(previous: Entry, next: Entry): Entry {
+  return {
+    ...next,
+    reviewed: needsReReview(previous, next) ? false : previous.reviewed,
+  };
 }
 export function saveEntry(
   data: Data,
@@ -92,10 +101,30 @@ export function updateEntries(
       if (!selected.has(entry.id)) return entry;
       const merged = { ...entry, ...patch };
       validateEntry(merged, data.clients);
+      // Bulk corrections (client, billability) reopen reviewed entries, like
+      // edits in the entry form. An explicit review/reopen patch wins.
+      if (patch.reviewed === undefined && needsReReview(entry, merged))
+        merged.reviewed = false;
       return merged;
     }),
   };
 }
-export function undoEntries(operation: UndoRecord): Data {
-  return operation.before;
+export function undoRecord(before: Data, after: Data, ids: string[]) {
+  const pick = (data: Data) =>
+    ids.map((id) => data.entries.find((e) => e.id === id)!);
+  return { before: pick(before), after: pick(after) };
+}
+export function undoEntries(data: Data, operation: UndoRecord): Data {
+  const restore = new Map(operation.before.map((e) => [e.id, e]));
+  for (const expected of operation.after) {
+    const current = data.entries.find((e) => e.id === expected.id);
+    if (!current || JSON.stringify(current) !== JSON.stringify(expected))
+      throw new Error(
+        'Undo is unavailable: an affected entry was changed or deleted after this action. Review it directly instead.',
+      );
+  }
+  return {
+    ...data,
+    entries: data.entries.map((e) => restore.get(e.id) ?? e),
+  };
 }
