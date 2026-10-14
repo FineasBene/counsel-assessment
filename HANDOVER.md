@@ -9,12 +9,13 @@ One commit per problem; each fix has a test that fails on the original code.
 - **Corrections stayed Reviewed**: bulk client/billability changes reopen review (shared `needsReReview` rule). Unchanged saves keep review, and a toast says when an edit reopens it.
 - **Undo reverted other work**: undo restored a workspace snapshot. It now restores only the touched entries, and declines, naming the entry, if one changed since.
 - **Friday workflow, selection scope**: changing week/filters clears the selection and says so. Actions reach only visible rows. Selected rows are highlighted, the toolbar shows "N of M in view selected · time", and active filters are listed with Clear.
+- **Pre-billing checks**: review rows flag billable internal time, missing descriptions, possible duplicates and >12h days, with a "Show N flagged" filter. Advisory only.
 - **Optional/extras**: needing-review shortcut, "ready for billing" time, repeat previous entry, dark theme, the review view kept across pages, a Reviewed mark on Time entries, duration presets, per-person review progress, and time by team member in Reports.
 
 ## Verified
 
-- `npm run check`: 42 unit/component tests and the build pass.
-- `npm run test:e2e`: 20 tests pass on desktop and mobile Chromium, including the new `review.spec.ts` (pilot week flows) and `theme.spec.ts` (axe WCAG A/AA in dark mode).
+- `npm run check`: 45 unit/component tests and the build pass.
+- `npm run test:e2e`: 22 tests pass on desktop and mobile Chromium, including the new `review.spec.ts` (pilot week flows) and `theme.spec.ts` (axe WCAG A/AA in dark mode).
 - Manual pass on 28 Sep–4 Oct, which found and fixed an unclear undo message and dark-theme colours.
 
 Not tested: Safari/Firefox, concurrent tabs during review, large workspaces.
@@ -22,6 +23,7 @@ Not tested: Safari/Firefox, concurrent tabs during review, large workspaces.
 ## Remaining
 
 - Undo is single-step and lasts only while the page stays open.
+- Internal clients are detected by "internal" in the name; a real client type field would be better.
 - Dark tokens were generated, then hand-adjusted. They need a design pass.
 
 ## Release recommendation
