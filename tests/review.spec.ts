@@ -111,3 +111,31 @@ test('editing a reviewed entry from the review sends it back to review', async (
   await page.getByRole('button', { name: 'Weekly review' }).first().click();
   await expect(row.getByRole('button', { name: /^Review / })).toBeVisible();
 });
+
+test('Time entries shows which entries are reviewed', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  const reviewed = page
+    .locator('tbody tr')
+    .filter({ hasText: 'Shareholder agreement review' });
+  await expect(reviewed.getByText('Reviewed')).toBeVisible();
+  const pending = page
+    .locator('tbody tr')
+    .filter({ hasText: 'Weekly team planning' });
+  await expect(pending.getByText('Reviewed')).toHaveCount(0);
+  for (const theme of ['light', 'dark']) {
+    if (theme === 'dark')
+      await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+    const axe = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(axe.violations.map((v) => v.id)).toEqual([]);
+  }
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});

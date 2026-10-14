@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Check } from 'lucide-react';
 import { duration, localDate, shortDate, totals } from '../model';
 import type { Client, Entry } from '../model';
 export function EntryTable({
@@ -87,6 +87,12 @@ export function EntryTable({
                             <i />
                             {entry.billable ? 'Billable' : 'Non-billable'}
                           </span>
+                          {entry.reviewed && (
+                            <span className="reviewed-mark">
+                              <Check size={12} aria-hidden="true" />
+                              Reviewed
+                            </span>
+                          )}
                         </td>
                         <td className="duration-cell">
                           <strong>{duration(entry.minutes)}</strong>
