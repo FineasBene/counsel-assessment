@@ -26,7 +26,7 @@ export function EntryForm({
   );
   const [clientName, setClientName] = useState('');
   const [description, setDescription] = useState(entry?.description ?? '');
-  const [billable, setBillable] = useState(true);
+  const [billable, setBillable] = useState(entry?.billable ?? true);
   const [error, setError] = useState('');
   return (
     <Modal
