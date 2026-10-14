@@ -12,10 +12,12 @@ import {
   Database,
   FileText,
   HelpCircle,
+  Moon,
   MoreHorizontal,
   Plus,
   Search,
   ShieldCheck,
+  Sun,
   Upload,
   X,
 } from 'lucide-react';
@@ -34,6 +36,7 @@ import {
 } from './model';
 import type { Client, Data, Entry } from './model';
 import { useStore } from './useStore';
+import { applyTheme, initialTheme } from './theme';
 import { Modal } from './components/Modal';
 import { EntryForm } from './components/EntryForm';
 
@@ -64,6 +67,7 @@ export default function App() {
   const [pendingRestore, setPendingRestore] = useState<Data | null>(null);
   const [utilityError, setUtilityError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
+  const [theme, setTheme] = useState(initialTheme);
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), toast.undo ? 12000 : 5000);
@@ -153,6 +157,18 @@ export default function App() {
               }}
             >
               <Database size={16} />
+            </button>
+            <button
+              className="icon-button"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+              onClick={() => {
+                const next = theme === 'dark' ? 'light' : 'dark';
+                applyTheme(next, true);
+                setTheme(next);
+              }}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
             <button
               className="icon-button"
