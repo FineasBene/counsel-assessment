@@ -145,4 +145,28 @@ describe('EntryForm editing', () => {
       description: 'Weekly team planning',
     });
   });
+
+  it('duplicates an entry as a new entry dated today', async () => {
+    const onSave = vi.fn();
+    render(
+      <EntryForm
+        template={planning}
+        clients={clients}
+        entries={[planning]}
+        onSave={onSave}
+        onClose={() => {}}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: /^Repeat / })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /Save entry/ }));
+    const saved = onSave.mock.calls[0][0] as Entry;
+    expect(saved).toMatchObject({
+      date: localDate(),
+      minutes: 45,
+      clientId: 'internal',
+      billable: false,
+      description: 'Weekly team planning',
+    });
+    expect(saved.id).not.toBe(planning.id);
+  });
 });

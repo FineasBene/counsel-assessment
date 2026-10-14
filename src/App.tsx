@@ -58,6 +58,7 @@ export default function App() {
   const [clientFilter, setClientFilter] = useState('all');
   const [billing, setBilling] = useState('all');
   const [entryModal, setEntryModal] = useState<Entry | 'new' | null>(null);
+  const [template, setTemplate] = useState<Entry | undefined>();
   const [clientModal, setClientModal] = useState<Client | 'new' | null>(null);
   const [utilityModal, setUtilityModal] = useState<'help' | 'backup' | null>(
     null,
@@ -600,6 +601,10 @@ export default function App() {
                     clients={data.clients}
                     readOnly={!!storageError}
                     onEdit={setEntryModal}
+                    onDuplicate={(entry) => {
+                      setTemplate(entry);
+                      setEntryModal('new');
+                    }}
                     onDelete={setDeleting}
                   />
                 )}
@@ -720,9 +725,13 @@ export default function App() {
       {entryModal && (
         <EntryForm
           entry={entryModal === 'new' ? undefined : entryModal}
+          template={entryModal === 'new' ? template : undefined}
           clients={data.clients}
           entries={data.entries}
-          onClose={() => setEntryModal(null)}
+          onClose={() => {
+            setEntryModal(null);
+            setTemplate(undefined);
+          }}
           onSave={(entry, client) => {
             const next = saveEntry(
               data,
@@ -731,6 +740,7 @@ export default function App() {
               entryModal === 'new' ? undefined : entryModal,
             );
             save(next);
+            setTemplate(undefined);
             const reopened =
               entryModal !== 'new' &&
               entryModal.reviewed &&

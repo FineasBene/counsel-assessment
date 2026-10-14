@@ -12,40 +12,45 @@ import type { Client, Entry } from '../model';
 import { Modal } from './Modal';
 export function EntryForm({
   entry,
+  template,
   clients,
   entries = [],
   onSave,
   onClose,
 }: {
   entry?: Entry;
+  /** Values to start a new entry from (duplicate); the date stays today. */
+  template?: Entry;
   clients: Client[];
   entries?: Entry[];
   onSave: (entry: Entry, client?: Client) => void;
   onClose: () => void;
 }) {
   const [date, setDate] = useState(entry?.date ?? localDate());
+  const start = entry ?? template;
   const [hours, setHours] = useState(
-    entry ? String(Math.floor(entry.minutes / 60)) : '',
+    start ? String(Math.floor(start.minutes / 60)) : '',
   );
   const [minutes, setMinutes] = useState(
-    entry ? String(entry.minutes % 60) : '',
+    start ? String(start.minutes % 60) : '',
   );
   const [clientId, setClientId] = useState(
-    entry?.clientId ?? clients[0]?.id ?? '__new',
+    start?.clientId ?? clients[0]?.id ?? '__new',
   );
   const [clientName, setClientName] = useState('');
-  const [description, setDescription] = useState(entry?.description ?? '');
-  const [billable, setBillable] = useState(entry?.billable ?? true);
+  const [description, setDescription] = useState(start?.description ?? '');
+  const [billable, setBillable] = useState(start?.billable ?? true);
   const [error, setError] = useState('');
   // New entries can repeat the user's most recent entry before the chosen
   // date (usually yesterday's work). Every field stays editable.
-  const previous = entry
-    ? undefined
-    : entries
-        .filter((e) => e.employee === EMPLOYEE && e.date < date)
-        .sort(
-          (a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
-        )[0];
+  const previous =
+    entry || template
+      ? undefined
+      : entries
+          .filter((e) => e.employee === EMPLOYEE && e.date < date)
+          .sort(
+            (a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
+          )[0];
   const previousClient = clients.find((c) => c.id === previous?.clientId);
   return (
     <Modal

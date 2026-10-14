@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Check } from 'lucide-react';
+import { Pencil, Trash2, Check, Copy } from 'lucide-react';
 import { duration, localDate, shortDate, totals } from '../model';
 import type { Client, Entry } from '../model';
 export function EntryTable({
@@ -6,12 +6,14 @@ export function EntryTable({
   clients,
   readOnly,
   onEdit,
+  onDuplicate,
   onDelete,
 }: {
   entries: Entry[];
   clients: Client[];
   readOnly: boolean;
   onEdit: (entry: Entry) => void;
+  onDuplicate?: (entry: Entry) => void;
   onDelete: (entry: Entry) => void;
 }) {
   const dates = [...new Set(entries.map((e) => e.date))];
@@ -107,6 +109,17 @@ export function EntryTable({
                             >
                               <Pencil size={14} />
                             </button>
+                            {onDuplicate && (
+                              <button
+                                className="icon-button"
+                                aria-label={`Duplicate ${client.name}: ${entry.description || 'time entry'}`}
+                                title="Duplicate to today"
+                                onClick={() => onDuplicate(entry)}
+                                disabled={readOnly}
+                              >
+                                <Copy size={14} />
+                              </button>
+                            )}
                             <button
                               className="icon-button delete-button"
                               aria-label={`Delete ${client.name}: ${entry.description || 'time entry'}`}

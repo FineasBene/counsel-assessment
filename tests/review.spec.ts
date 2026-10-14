@@ -190,3 +190,29 @@ test('copies a Friday summary of the current view', async ({
     ),
   ).toBe(true);
 });
+
+test('duplicates an entry to today from Time entries', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page
+    .getByRole('button', {
+      name: 'Duplicate Firm · Internal: Weekly team planning',
+    })
+    .click();
+  await expect(page.getByLabel('Description')).toHaveValue(
+    'Weekly team planning',
+  );
+  await expect(page.getByRole('checkbox')).not.toBeChecked();
+  await page.getByRole('button', { name: 'Save entry', exact: true }).click();
+  await expect(page.getByText('Time entry saved.')).toBeVisible();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  // The review opens on the newest week, which now holds today's copy.
+  await expect(
+    page.locator('.review-row').filter({ hasText: 'Weekly team planning' }),
+  ).toHaveCount(1);
+  await expect(page.getByLabel('Review week', { exact: true })).not.toHaveValue(
+    '2026-09-28',
+  );
+});
