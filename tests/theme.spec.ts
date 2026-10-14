@@ -38,4 +38,10 @@ test('dark theme persists and has no WCAG A/AA violations', async ({
   await page.getByRole('button', { name: 'Log time', exact: true }).click();
   await page.screenshot({ path: info.outputPath('dialog-dark.png') });
   expect(await violations(page)).toEqual([]);
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await expect(page.getByText('Replace this workspace?')).toBeVisible();
+  await page.screenshot({ path: info.outputPath('restore-dark.png') });
+  expect(await violations(page)).toEqual([]);
 });
