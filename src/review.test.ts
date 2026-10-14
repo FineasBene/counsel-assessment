@@ -4,6 +4,7 @@ import { decodeData } from './model';
 import type { Data } from './model';
 import {
   billingWarnings,
+  weeklySummary,
   saveEntry,
   undoEntries,
   undoRecord,
@@ -118,5 +119,26 @@ describe('pre-billing checks', () => {
       base.clients,
     );
     expect(w.size).toBe(0);
+  });
+});
+
+describe('weekly summary', () => {
+  it('summarises exactly the rows given', () => {
+    const data = workspace();
+    const week = data.entries.filter(
+      (e) => e.date >= '2026-09-28' && e.date <= '2026-10-04',
+    );
+    const sofia = week.filter((e) => e.employee === 'Sofia Keller');
+    const text = weeklySummary(sofia, week, data.clients, '2026-09-28', [
+      'Sofia Keller',
+    ]);
+    expect(text).toContain('2026-09-28 to 2026-10-04');
+    expect(text).toContain('View: Sofia Keller');
+    expect(text).toContain(`Entries: ${sofia.length}`);
+    expect(text).toContain(
+      `Reviewed: ${sofia.filter((e) => e.reviewed).length} of ${sofia.length}`,
+    );
+    expect(text).toContain('- Sofia Keller:');
+    expect(text).not.toContain('Alex Morgan');
   });
 });

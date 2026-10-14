@@ -163,3 +163,30 @@ test('Reports shows time by team member', async ({ page }, info) => {
     expect(axe.violations.map((v) => v.id)).toEqual([]);
   }
 });
+
+test('copies a Friday summary of the current view', async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data', exact: true }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page.getByRole('button', { name: 'Weekly review' }).first().click();
+  await page
+    .getByLabel('Review employee', { exact: true })
+    .selectOption('Sofia Keller');
+  await page.getByRole('button', { name: 'Copy summary' }).click();
+  await expect(page.getByText(/Weekly summary copied/)).toBeVisible();
+  const text = await page.evaluate(() => navigator.clipboard.readText());
+  expect(text).toContain('2026-09-28 to 2026-10-04');
+  expect(text).toContain('View: Sofia Keller');
+  expect(text).toContain('- Sofia Keller:');
+  expect(text).not.toContain('Alex Morgan');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});

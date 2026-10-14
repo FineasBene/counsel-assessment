@@ -907,6 +907,11 @@ h1 {
   gap: 14px;
   margin-bottom: 19px;
 }
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .period-left {
   display: flex;
   align-items: center;

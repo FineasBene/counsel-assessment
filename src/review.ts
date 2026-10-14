@@ -238,3 +238,36 @@ export function billingWarnings(
   }
   return warnings;
 }
+
+// Plain-text Friday close summary of the rows in view, for pasting into an
+// email to the partner. Uses the same rows as totals and export.
+export function weeklySummary(
+  rows: Entry[],
+  allWeek: Entry[],
+  clients: Client[],
+  week: string,
+  filters: string[],
+) {
+  const sum = (list: Entry[]) => list.reduce((n, e) => n + e.minutes, 0);
+  const fmt = (m: number) =>
+    `${Math.floor(m / 60)}h${m % 60 ? ` ${String(m % 60).padStart(2, '0')}m` : ''}`;
+  const warnings = billingWarnings(allWeek, clients);
+  const reviewed = rows.filter((e) => e.reviewed);
+  const people = [...new Set(rows.map((e) => e.employee))].sort();
+  return [
+    `Counsel weekly review: ${week} to ${addDays(week, 6)}`,
+    filters.length ? `View: ${filters.join(' · ')}` : 'View: all entries',
+    '',
+    `Entries: ${rows.length}`,
+    `Time: ${fmt(sum(rows))} (${fmt(sum(rows.filter((e) => e.billable)))} billable)`,
+    `Reviewed: ${reviewed.length} of ${rows.length}`,
+    `Ready for billing: ${fmt(sum(reviewed.filter((e) => e.billable)))}`,
+    `Flagged by pre-billing checks: ${rows.filter((e) => warnings.has(e.id)).length}`,
+    '',
+    'By team member:',
+    ...people.map((name) => {
+      const mine = rows.filter((e) => e.employee === name);
+      return `- ${name}: ${fmt(sum(mine))}, ${mine.filter((e) => e.reviewed).length}/${mine.length} reviewed`;
+    }),
+  ].join('\n');
+}

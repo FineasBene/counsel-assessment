@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
+  ClipboardCopy,
   Pencil,
   Search,
   Undo2,
@@ -30,6 +31,7 @@ import {
   undoEntries,
   undoRecord,
   updateEntries,
+  weeklySummary,
 } from '../review';
 import type { EntryPatch, UndoRecord } from '../review';
 
@@ -196,23 +198,50 @@ export function ReviewPage({
             </button>
           )}
         </div>
-        <button
-          className="button secondary small"
-          disabled={!visible.length}
-          onClick={() => {
-            download(
-              csv(exportEntries, data.clients),
-              `counsel-review-${week}.csv`,
-              'text/csv;charset=utf-8',
-            );
-            setMessage(
-              `Exported ${exportEntries.length} ${exportEntries.length === 1 ? 'entry' : 'entries'} in this view.`,
-            );
-          }}
-        >
-          <ArrowDownToLine size={16} />
-          Export view
-        </button>
+        <div className="toolbar-actions">
+          <button
+            className="button secondary small"
+            disabled={!visible.length}
+            onClick={async () => {
+              const text = weeklySummary(
+                visible,
+                selectWeek(data.entries, week),
+                data.clients,
+                week,
+                activeFilters as string[],
+              );
+              try {
+                await navigator.clipboard.writeText(text);
+                setMessage('Weekly summary copied. Paste it into an email.');
+              } catch {
+                download(text, `counsel-summary-${week}.txt`, 'text/plain');
+                setMessage(
+                  'Clipboard unavailable; summary downloaded instead.',
+                );
+              }
+            }}
+          >
+            <ClipboardCopy size={16} />
+            Copy summary
+          </button>
+          <button
+            className="button secondary small"
+            disabled={!visible.length}
+            onClick={() => {
+              download(
+                csv(exportEntries, data.clients),
+                `counsel-review-${week}.csv`,
+                'text/csv;charset=utf-8',
+              );
+              setMessage(
+                `Exported ${exportEntries.length} ${exportEntries.length === 1 ? 'entry' : 'entries'} in this view.`,
+              );
+            }}
+          >
+            <ArrowDownToLine size={16} />
+            Export view
+          </button>
+        </div>
       </div>
       <div className="review-progress">
         <span className="review-emblem">
