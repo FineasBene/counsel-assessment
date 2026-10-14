@@ -73,6 +73,13 @@ export function ReviewPage({
     visible.filter((e) => selectedIds.includes(e.id)),
   ).total;
   const pendingInView = visible.filter((e) => !e.reviewed).length;
+  const readyForBilling = totals(visible.filter((e) => e.reviewed)).billable;
+  const activeFilters = [
+    clientId !== 'all' && data.clients.find((c) => c.id === clientId)?.name,
+    employee !== 'all' && employee,
+    status !== 'all' && (status === 'pending' ? 'Needs review' : 'Reviewed'),
+    search && `“${search}”`,
+  ].filter(Boolean);
   const employees = [...new Set(data.entries.map((e) => e.employee))].sort();
   function changeView(update: () => void) {
     update();
@@ -184,6 +191,9 @@ export function ReviewPage({
         <div>
           <span>Billable in view</span>
           <strong>{duration(summary.billable)}</strong>
+          <small className="review-detail">
+            {duration(readyForBilling)} reviewed and ready for billing
+          </small>
         </div>
         <div>
           <span>Reviewed in view</span>
@@ -249,6 +259,24 @@ export function ReviewPage({
             <option value="reviewed">Reviewed</option>
           </select>
         </div>
+        {activeFilters.length > 0 && (
+          <div className="filter-context" aria-live="polite">
+            <span>Showing only: {activeFilters.join(' · ')}</span>
+            <button
+              className="text-button"
+              onClick={() =>
+                changeView(() => {
+                  setClientId('all');
+                  setEmployee('all');
+                  setStatus('all');
+                  setSearch('');
+                })
+              }
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
         <div className="bulk-toolbar">
           <label className="select-visible">
             <input

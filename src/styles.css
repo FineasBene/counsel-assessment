@@ -2371,6 +2371,25 @@ tbody tr:hover {
 .review-filters {
   flex-wrap: wrap;
 }
+.review-summary .review-detail {
+  display: block;
+  margin-top: 6px;
+  color: #6a707d;
+  font-size: 12px;
+}
+.review-summary .text-button {
+  margin-top: 8px;
+}
+.filter-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 0 25px 16px;
+  margin-top: -6px;
+  color: #6a707d;
+  font-size: 13px;
+}
 .review-filters .search-field {
   min-width: 190px;
 }

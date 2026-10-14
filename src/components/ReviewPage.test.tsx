@@ -80,4 +80,33 @@ describe('Weekly review scope', () => {
       }),
     ).toBeDisabled();
   });
+
+  it('shows reviewed billable time and lets you clear active filters', async () => {
+    render(<Harness />);
+    const data = decodeData(JSON.stringify(pilot));
+    const ready = data.entries
+      .filter(
+        (e) =>
+          e.date >= '2026-09-28' &&
+          e.date <= '2026-10-04' &&
+          e.reviewed &&
+          e.billable,
+      )
+      .reduce((sum, e) => sum + e.minutes, 0);
+    expect(
+      screen.getByText(`${duration(ready)} reviewed and ready for billing`),
+    ).toBeInTheDocument();
+    await userEvent.selectOptions(
+      screen.getByLabelText('Review client'),
+      'meridian',
+    );
+    expect(
+      screen.getByText('Showing only: Meridian Holdings'),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    );
+    expect(screen.getByLabelText('Review client')).toHaveValue('all');
+    expect(screen.queryByText(/Showing only/)).not.toBeInTheDocument();
+  });
 });
