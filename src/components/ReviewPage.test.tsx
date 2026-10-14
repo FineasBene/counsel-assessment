@@ -29,7 +29,10 @@ const rowMinutes = () =>
     return sum + Number(h) * 60 + Number(m ?? 0);
   }, 0);
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  sessionStorage.clear();
+});
 
 describe('Weekly review scope', () => {
   it('totals and exports exactly the filtered rows, not the whole week', async () => {
@@ -126,5 +129,33 @@ describe('Weekly review scope', () => {
     await userEvent.click(all);
     expect(all.indeterminate).toBe(false);
     expect(all).toBeChecked();
+  });
+
+  it('keeps the week and filters when the review is reopened', async () => {
+    const first = render(<Harness />);
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Previous review week' }),
+    );
+    await userEvent.selectOptions(
+      screen.getByLabelText('Review client'),
+      'meridian',
+    );
+    first.unmount();
+    render(<Harness />);
+    expect(screen.getByLabelText('Review week')).toHaveValue('2026-09-21');
+    expect(screen.getByLabelText('Review client')).toHaveValue('meridian');
+    await userEvent.click(screen.getByRole('button', { name: 'Latest week' }));
+    expect(screen.getByLabelText('Review week')).toHaveValue('2026-09-28');
+  });
+
+  it('ignores a saved view that no longer fits the workspace', () => {
+    sessionStorage.setItem(
+      'counsel.review-view.v1',
+      JSON.stringify({ week: '2026-09-30', clientId: 'gone', status: 'x' }),
+    );
+    render(<Harness />);
+    expect(screen.getByLabelText('Review week')).toHaveValue('2026-09-28');
+    expect(screen.getByLabelText('Review client')).toHaveValue('all');
+    expect(screen.getByLabelText('Review status')).toHaveValue('all');
   });
 });

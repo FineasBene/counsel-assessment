@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowDownToLine,
   Check,
@@ -15,12 +15,14 @@ import {
   csv,
   download,
   duration,
-  localDate,
   shortDate,
   totals,
   weekStart,
 } from '../model';
 import {
+  latestWeek,
+  loadReviewView,
+  saveReviewView,
   selectReview,
   undoEntries,
   undoRecord,
@@ -39,18 +41,16 @@ export function ReviewPage({
   onEdit: (entry: Entry) => void;
   readOnly: boolean;
 }) {
-  const [week, setWeek] = useState(() =>
-    weekStart(
-      data.entries
-        .map((e) => e.date)
-        .sort()
-        .at(-1) ?? localDate(),
-    ),
-  );
-  const [clientId, setClientId] = useState('all');
-  const [employee, setEmployee] = useState('all');
-  const [status, setStatus] = useState('all');
-  const [search, setSearch] = useState('');
+  const [initialView] = useState(() => loadReviewView(data));
+  const [week, setWeek] = useState(initialView.week);
+  const [clientId, setClientId] = useState(initialView.clientId);
+  const [employee, setEmployee] = useState(initialView.employee);
+  const [status, setStatus] = useState(initialView.status);
+  const [search, setSearch] = useState(initialView.search);
+  useEffect(() => {
+    saveReviewView({ week, clientId, employee, status, search });
+  }, [week, clientId, employee, status, search]);
+  const newestWeek = latestWeek(data.entries);
   const [selected, setSelected] = useState<string[]>([]);
   const [action, setAction] = useState('review');
   const [targetClient, setTargetClient] = useState(data.clients[0]?.id ?? '');
@@ -151,6 +151,14 @@ export function ReviewPage({
           >
             <ChevronRight size={18} />
           </button>
+          {week !== newestWeek && (
+            <button
+              className="text-button"
+              onClick={() => changeView(() => setWeek(newestWeek))}
+            >
+              Latest week
+            </button>
+          )}
         </div>
         <button
           className="button secondary small"

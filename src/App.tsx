@@ -45,7 +45,7 @@ import type { Page } from './components/Sidebar';
 import { ClientForm } from './components/ClientForm';
 import { Stat } from './components/Stat';
 import { ReviewPage } from './components/ReviewPage';
-import { saveEntry } from './review';
+import { saveEntry, saveReviewView } from './review';
 import pilotWorkspace from './fixtures/pilot-workspace.json';
 import { EntryTable } from './components/EntryTable';
 type Toast = { text: string; undo?: () => void };
@@ -106,6 +106,7 @@ export default function App() {
   function loadSample() {
     try {
       save(sampleData());
+      saveReviewView(null);
       setWeek(weekStart(localDate()));
       setToast({ text: 'Sample workspace loaded. All records are fictional.' });
     } catch (e) {
@@ -953,6 +954,7 @@ export default function App() {
                     onClick={() => {
                       try {
                         save(pendingRestore, true);
+                        saveReviewView(null);
                         setPendingRestore(null);
                         setUtilityModal(null);
                         setPage('entries');

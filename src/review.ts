@@ -1,5 +1,11 @@
 import type { Client, Data, Entry } from './model';
-import { addDays, validateEntry } from './model';
+import {
+  addDays,
+  localDate,
+  validDate,
+  validateEntry,
+  weekStart,
+} from './model';
 
 export type ReviewFilters = {
   week: string;
@@ -132,4 +138,61 @@ export function undoEntries(data: Data, operation: UndoRecord): Data {
     ...data,
     entries: data.entries.map((e) => restore.get(e.id) ?? e),
   };
+}
+
+// The review view (week and filters) survives moving between pages for the
+// rest of the browser session. It is kept apart from workspace data, so
+// backups are unaffected, and is validated against the current workspace.
+export const REVIEW_VIEW_KEY = 'counsel.review-view.v1';
+export function latestWeek(entries: Entry[]) {
+  return weekStart(
+    entries
+      .map((e) => e.date)
+      .sort()
+      .at(-1) ?? localDate(),
+  );
+}
+export function loadReviewView(data: Data): ReviewFilters {
+  const fallback: ReviewFilters = {
+    week: latestWeek(data.entries),
+    clientId: 'all',
+    employee: 'all',
+    status: 'all',
+    search: '',
+  };
+  try {
+    const saved: unknown = JSON.parse(
+      sessionStorage.getItem(REVIEW_VIEW_KEY) ?? 'null',
+    );
+    if (typeof saved !== 'object' || saved === null) return fallback;
+    const v = saved as Record<string, unknown>;
+    return {
+      week:
+        typeof v.week === 'string' &&
+        validDate(v.week) &&
+        weekStart(v.week) === v.week
+          ? v.week
+          : fallback.week,
+      clientId: data.clients.some((c) => c.id === v.clientId)
+        ? (v.clientId as string)
+        : 'all',
+      employee: data.entries.some((e) => e.employee === v.employee)
+        ? (v.employee as string)
+        : 'all',
+      status:
+        v.status === 'pending' || v.status === 'reviewed' ? v.status : 'all',
+      search: typeof v.search === 'string' ? v.search.slice(0, 200) : '',
+    };
+  } catch {
+    return fallback;
+  }
+}
+export function saveReviewView(filters: ReviewFilters | null) {
+  try {
+    if (filters)
+      sessionStorage.setItem(REVIEW_VIEW_KEY, JSON.stringify(filters));
+    else sessionStorage.removeItem(REVIEW_VIEW_KEY);
+  } catch {
+    // Storage unavailable: the view simply resets next time.
+  }
 }
