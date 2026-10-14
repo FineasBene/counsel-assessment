@@ -2,33 +2,32 @@
 
 ## Changed
 
-One commit per problem; each new test fails on the previous code.
+One commit per problem. Each fix has a test that fails on the original code.
 
-- **Billability lost on edit** (Alex): the entry form always started with Billable on. It now starts from the stored value. `EntryForm.tsx`
-- **Totals and export ignored filters** (Sofia): the summary and Export view used the whole week. Both now use exactly the visible rows; selection does not affect export.
-- **Corrections stayed "Reviewed"**: bulk client and billability changes now reset review when a value actually changes. This uses the same `needsReReview` rule as the form; unchanged saves keep review.
-- **Undo reverted other work**: undo restored a whole-workspace snapshot. It now restores only the entries the action touched. If one of them was edited or deleted since, undo is declined and the message names the entry.
-- **Friday workflow (selection scope)**: changing the week or a filter clears the selection and says so, and actions only reach visible rows. The toolbar shows "N of M in view selected · time" and the button names its count. Active filters are listed with a Clear button.
-- **Smaller additions**: "Show N needing review", reviewed billable time ("ready for billing"), and "Repeat previous entry" for Alex.
+- **Billability lost on edit**: the form always started Billable. It now uses the stored value.
+- **Totals/export ignored filters**: both now use exactly the visible rows; selection never changes export.
+- **Corrections stayed Reviewed**: bulk client/billability changes now reopen review, using the same `needsReReview` rule as the form. Unchanged saves keep review, including descriptions with stray whitespace. A toast says when an edit reopens review.
+- **Undo reverted other work**: undo restored a whole-workspace snapshot. It now restores only the entries the action touched, and declines, naming the entry, if one changed since.
+- **Friday workflow, selection scope**: changing week/filters clears the selection and says so. Actions reach only visible rows. Selected rows are highlighted, the toolbar reads "N of M in view selected · time", and active filters are listed with Clear.
+- **Optional requests**: "Show N needing review", reviewed billable time ("ready for billing"), repeat previous entry, and a dark theme (tokenised colours, light theme unchanged).
 
 ## Verified
 
-- `npm run check`: 36 unit and component tests pass, and the build passes.
-- `npm run test:e2e`: 12 tests pass on desktop and mobile Chromium. A new `tests/review.spec.ts` restores the pilot, checks the filtered CSV export, selection clearing and re-review after a client move, and runs axe.
-- Manual pass on the pilot week 28 Sep–4 Oct. This found that the declined-undo message was unclear, which is now fixed.
+- `npm run check`: 38 unit/component tests and the build pass.
+- `npm run test:e2e`: 16 tests pass, desktop and mobile Chromium. New: `review.spec.ts` (pilot week export, selection, re-review via bulk and form) and `theme.spec.ts` (axe WCAG A/AA in dark mode on four screens).
+- Manual pass on 28 Sep–4 Oct. This found an unclear undo message and dark-theme field/notice colours, all fixed.
 
-Not tested: Safari/Firefox, multiple tabs during review, very large workspaces.
+Not tested: Safari/Firefox, concurrent tabs during review, large workspaces, dark mode on Reports/Clients beyond manual viewing.
 
 ## Remaining
 
-- The form trims descriptions, so an imported entry with trailing spaces loses review on an unchanged save.
-- Undo is held in memory per page visit, with no history.
-- Dark theme is deferred: about 226 hard-coded colours would need tokenising and contrast re-checks.
+- Undo covers only the last review action and lasts only while the page stays open.
+- Dark tokens were generated, then hand-adjusted. They need a design pass.
 
 ## Release recommendation
 
-I would release this to the pilot: every reported issue is reproduced and covered by a regression test. One limitation: undo covers only the last review action.
+Release to the pilot. Every report is reproduced and covered by regression tests. Limitation: single-step undo.
 
 ## AI use
 
-Claude Code (Opus) read the code, implemented the fixes and wrote the tests. I tested each change by hand in the browser against the pilot week. Every new test was run against the original source (`git stash`) and had to fail there. That check showed the agent's first billability test exercised `saveEntry` and passed on the old code, so it was replaced with an `EntryForm` component test.
+Claude Code wrote the code and tests; I tested each change in the browser. Every new test was run against the original source (`git stash`) and had to fail. That caught an agent test that exercised `saveEntry` and passed on the buggy code; it was replaced with an `EntryForm` component test.
