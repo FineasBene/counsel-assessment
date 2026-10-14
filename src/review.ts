@@ -116,12 +116,17 @@ export function undoRecord(before: Data, after: Data, ids: string[]) {
 }
 export function undoEntries(data: Data, operation: UndoRecord): Data {
   const restore = new Map(operation.before.map((e) => [e.id, e]));
-  for (const expected of operation.after) {
+  const conflicts = operation.after.filter((expected) => {
     const current = data.entries.find((e) => e.id === expected.id);
-    if (!current || JSON.stringify(current) !== JSON.stringify(expected))
-      throw new Error(
-        'Undo is unavailable: an affected entry was changed or deleted after this action. Review it directly instead.',
-      );
+    return !current || JSON.stringify(current) !== JSON.stringify(expected);
+  });
+  if (conflicts.length) {
+    const names = conflicts
+      .map((e) => `“${e.description || 'Untitled entry'}”`)
+      .join(', ');
+    throw new Error(
+      `Undo was not applied, so no work was lost: ${names} changed after this action. Correct ${conflicts.length === 1 ? 'it' : 'them'} directly instead.`,
+    );
   }
   return {
     ...data,

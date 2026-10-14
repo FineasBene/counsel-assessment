@@ -70,7 +70,9 @@ describe('undo is scoped to the last review action', () => {
       entry,
     );
     expect(() => undoEntries(afterEdit, operation)).toThrow(
-      'Undo is unavailable',
+      'Undo was not applied, so no work was lost: “Shareholder agreement review” changed',
     );
+    // Declining leaves the newer edit in place.
+    expect(find(afterEdit, 'entry-001').minutes).toBe(120);
   });
 });
