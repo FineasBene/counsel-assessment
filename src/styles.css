@@ -1759,11 +1759,20 @@ tbody tr:hover {
 }
 .duration-presets {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap;
   gap: 6px;
-  margin-top: 8px;
+  margin: -6px 0 20px;
+  overflow-x: auto;
+}
+.duration-presets > span {
+  margin-right: 4px;
+  color: var(--t158);
+  font-size: 12px;
+  white-space: nowrap;
 }
 .duration-presets button {
+  flex: none;
   min-height: 26px;
   padding: 3px 9px;
   border: 1px solid var(--border);
@@ -3173,4 +3182,9 @@ tbody tr:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .duration-presets > span {
+    display: none;
+  }
 }

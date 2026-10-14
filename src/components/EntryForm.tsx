@@ -193,23 +193,28 @@ export function EntryForm({
                 <span>m</span>
               </label>
             </div>
-            <div className="duration-presets">
-              {[15, 30, 45, 60, 120].map((preset) => (
-                <button
-                  type="button"
-                  key={preset}
-                  aria-label={`Set duration to ${duration(preset)}`}
-                  aria-pressed={Number(hours) * 60 + Number(minutes) === preset}
-                  onClick={() => {
-                    setHours(String(Math.floor(preset / 60)));
-                    setMinutes(String(preset % 60));
-                  }}
-                >
-                  {preset < 60 ? `${preset}m` : `${preset / 60}h`}
-                </button>
-              ))}
-            </div>
           </fieldset>
+        </div>
+        <div
+          className="duration-presets"
+          role="group"
+          aria-label="Quick durations"
+        >
+          <span>Quick duration</span>
+          {[15, 30, 45, 60, 120].map((preset) => (
+            <button
+              type="button"
+              key={preset}
+              aria-label={`Set duration to ${duration(preset)}`}
+              aria-pressed={Number(hours) * 60 + Number(minutes) === preset}
+              onClick={() => {
+                setHours(String(Math.floor(preset / 60)));
+                setMinutes(String(preset % 60));
+              }}
+            >
+              {preset < 60 ? `${preset}m` : `${preset / 60}h`}
+            </button>
+          ))}
         </div>
         <label className="field">
           Description <span className="optional">optional</span>
