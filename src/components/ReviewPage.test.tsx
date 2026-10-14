@@ -109,4 +109,22 @@ describe('Weekly review scope', () => {
     expect(screen.getByLabelText('Review client')).toHaveValue('all');
     expect(screen.queryByText(/Showing only/)).not.toBeInTheDocument();
   });
+
+  it('marks selected rows and shows a partial selection as mixed', async () => {
+    render(<Harness />);
+    const all = screen.getByLabelText<HTMLInputElement>(
+      'Select visible entries',
+    );
+    await userEvent.click(
+      screen.getByLabelText('Select Shareholder agreement review'),
+    );
+    expect(all.indeterminate).toBe(true);
+    expect(all).not.toBeChecked();
+    expect(document.querySelectorAll('.review-row.is-selected')).toHaveLength(
+      1,
+    );
+    await userEvent.click(all);
+    expect(all.indeterminate).toBe(false);
+    expect(all).toBeChecked();
+  });
 });

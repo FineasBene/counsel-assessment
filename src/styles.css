@@ -251,6 +251,7 @@
   --muted: #9a9eab;
   --border: #2e323d;
   --green: #6fae95;
+  --selected-bg: #252236;
   --t0: #c8ccd6;
   --t1: #14161c;
   --t2: #3c2d79;
@@ -504,6 +505,7 @@
   --muted: #858995;
   --border: #e9ebef;
   --green: #447967;
+  --selected-bg: #f6f4fb;
 }
 * {
   box-sizing: border-box;
@@ -2949,6 +2951,10 @@ tbody tr:hover {
 }
 .review-row:last-child {
   border-bottom: 0;
+}
+.review-row.is-selected {
+  background: var(--selected-bg);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .review-entry {
   flex: 1;

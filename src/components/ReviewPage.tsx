@@ -282,6 +282,13 @@ export function ReviewPage({
             <input
               type="checkbox"
               aria-label="Select visible entries"
+              ref={(el) => {
+                // Partly selected views show a mixed state, not "unchecked".
+                if (el)
+                  el.indeterminate =
+                    selectedIds.length > 0 &&
+                    selectedIds.length < visible.length;
+              }}
               checked={
                 visible.length > 0 &&
                 visible.every((e) => selected.includes(e.id))
@@ -381,7 +388,7 @@ export function ReviewPage({
               const client = data.clients.find((c) => c.id === entry.clientId)!;
               return (
                 <article
-                  className="review-row"
+                  className={`review-row ${selectedIds.includes(entry.id) ? 'is-selected' : ''}`}
                   data-entry-id={entry.id}
                   key={entry.id}
                 >
