@@ -1,0 +1,252 @@
+{
+  "version": 1,
+  "clients": [
+    {
+      "id": "meridian",
+      "name": "Meridian Holdings",
+      "color": "#7460a8"
+    },
+    {
+      "id": "northstar",
+      "name": "Northstar Ventures",
+      "color": "#416e83"
+    },
+    {
+      "id": "oak",
+      "name": "Oak & Stone",
+      "color": "#896238"
+    },
+    {
+      "id": "internal",
+      "name": "Firm · Internal",
+      "color": "#52735a"
+    },
+    {
+      "id": "foundation",
+      "name": "Meridian Foundation",
+      "color": "#975566"
+    }
+  ],
+  "entries": [
+    {
+      "id": "entry-001",
+      "date": "2026-09-28",
+      "minutes": 90,
+      "clientId": "meridian",
+      "billable": true,
+      "description": "Shareholder agreement review",
+      "employee": "Alex Morgan",
+      "reviewed": true
+    },
+    {
+      "id": "entry-002",
+      "date": "2026-09-28",
+      "minutes": 45,
+      "clientId": "internal",
+      "billable": false,
+      "description": "Weekly team planning",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    },
+    {
+      "id": "entry-003",
+      "date": "2026-09-28",
+      "minutes": 120,
+      "clientId": "northstar",
+      "billable": true,
+      "description": "Investment documents",
+      "employee": "Sofia Keller",
+      "reviewed": true
+    },
+    {
+      "id": "entry-004",
+      "date": "2026-09-28",
+      "minutes": 75,
+      "clientId": "oak",
+      "billable": true,
+      "description": "Lease amendment notes",
+      "employee": "Noah Weber",
+      "reviewed": false
+    },
+    {
+      "id": "entry-005",
+      "date": "2026-09-29",
+      "minutes": 150,
+      "clientId": "meridian",
+      "billable": true,
+      "description": "Transaction due diligence",
+      "employee": "Sofia Keller",
+      "reviewed": true
+    },
+    {
+      "id": "entry-006",
+      "date": "2026-09-29",
+      "minutes": 60,
+      "clientId": "foundation",
+      "billable": true,
+      "description": "Foundation governance call",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    },
+    {
+      "id": "entry-007",
+      "date": "2026-09-29",
+      "minutes": 30,
+      "clientId": "internal",
+      "billable": false,
+      "description": "Knowledge sharing",
+      "employee": "Noah Weber",
+      "reviewed": true
+    },
+    {
+      "id": "entry-008",
+      "date": "2026-09-29",
+      "minutes": 135,
+      "clientId": "northstar",
+      "billable": true,
+      "description": "Draft term sheet",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    },
+    {
+      "id": "entry-009",
+      "date": "2026-09-30",
+      "minutes": 105,
+      "clientId": "oak",
+      "billable": true,
+      "description": "Commercial lease review",
+      "employee": "Sofia Keller",
+      "reviewed": true
+    },
+    {
+      "id": "entry-010",
+      "date": "2026-09-30",
+      "minutes": 45,
+      "clientId": "internal",
+      "billable": false,
+      "description": "Practice development",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    },
+    {
+      "id": "entry-011",
+      "date": "2026-09-30",
+      "minutes": 60,
+      "clientId": "meridian",
+      "billable": true,
+      "description": "Counsel call and follow-up",
+      "employee": "Noah Weber",
+      "reviewed": false
+    },
+    {
+      "id": "entry-012",
+      "date": "2026-10-01",
+      "minutes": 90,
+      "clientId": "northstar",
+      "billable": true,
+      "description": "Review investment clauses",
+      "employee": "Noah Weber",
+      "reviewed": false
+    },
+    {
+      "id": "entry-013",
+      "date": "2026-10-01",
+      "minutes": 75,
+      "clientId": "foundation",
+      "billable": true,
+      "description": "Charity registration documents",
+      "employee": "Sofia Keller",
+      "reviewed": true
+    },
+    {
+      "id": "entry-014",
+      "date": "2026-10-01",
+      "minutes": 60,
+      "clientId": "meridian",
+      "billable": true,
+      "description": "Closing checklist",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    },
+    {
+      "id": "entry-015",
+      "date": "2026-10-02",
+      "minutes": 120,
+      "clientId": "oak",
+      "billable": true,
+      "description": "Client meeting preparation",
+      "employee": "Alex Morgan",
+      "reviewed": true
+    },
+    {
+      "id": "entry-016",
+      "date": "2026-10-02",
+      "minutes": 45,
+      "clientId": "internal",
+      "billable": false,
+      "description": "Billing preparation",
+      "employee": "Sofia Keller",
+      "reviewed": false
+    },
+    {
+      "id": "entry-017",
+      "date": "2026-10-02",
+      "minutes": 30,
+      "clientId": "meridian",
+      "billable": false,
+      "description": "Relationship development",
+      "employee": "Noah Weber",
+      "reviewed": false
+    },
+    {
+      "id": "entry-018",
+      "date": "2026-10-04",
+      "minutes": 15,
+      "clientId": "northstar",
+      "billable": true,
+      "description": "Final document check",
+      "employee": "Sofia Keller",
+      "reviewed": false
+    },
+    {
+      "id": "entry-019",
+      "date": "2026-09-21",
+      "minutes": 180,
+      "clientId": "meridian",
+      "billable": true,
+      "description": "Previous week document review",
+      "employee": "Alex Morgan",
+      "reviewed": true
+    },
+    {
+      "id": "entry-020",
+      "date": "2026-09-23",
+      "minutes": 60,
+      "clientId": "internal",
+      "billable": false,
+      "description": "Previous week administration",
+      "employee": "Noah Weber",
+      "reviewed": true
+    },
+    {
+      "id": "entry-021",
+      "date": "2026-09-25",
+      "minutes": 90,
+      "clientId": "oak",
+      "billable": true,
+      "description": "Lease negotiation",
+      "employee": "Sofia Keller",
+      "reviewed": true
+    },
+    {
+      "id": "entry-022",
+      "date": "2026-09-27",
+      "minutes": 30,
+      "clientId": "foundation",
+      "billable": true,
+      "description": "Weekend correspondence",
+      "employee": "Alex Morgan",
+      "reviewed": false
+    }
+  ]
+}
